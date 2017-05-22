@@ -1,5 +1,4 @@
 
-import common._
 
 package object scalashop {
 
@@ -33,14 +32,38 @@ package object scalashop {
   /** Image is a two-dimensional matrix of pixel values. */
   class Img(val width: Int, val height: Int, private val data: Array[RGBA]) {
     def this(w: Int, h: Int) = this(w, h, new Array(w * h))
+
     def apply(x: Int, y: Int): RGBA = data(y * width + x)
+
     def update(x: Int, y: Int, c: RGBA): Unit = data(y * width + x) = c
   }
 
   /** Computes the blurred RGBA value of a single pixel of the input image. */
   def boxBlurKernel(src: Img, x: Int, y: Int, radius: Int): RGBA = {
-    // TODO implement using while loops
-    ???
-  }
+    val nrOfPixels = Math.pow((2 * radius) + 1, 2).toInt
+    //    var i = x - radius
+    //    var j = y - radius
+    //    var redV, greenV, blueV, alphaV = 0
+    //    while (i <= x + radius) {
+    //      while (j <= y + radius) {
+    //        val rgba = src(i, j)
+    //        redV += red(rgba)
+    //        greenV += green(rgba)
+    //        blueV += blue(rgba)
+    //        alphaV += alpha(rgba)
+    //        j += 1
+    //      }
+    //      i += 1
+    //      j = y - radius
+    //    }
 
+    val summedChannelValues = (for {
+      i <- x - radius to x + radius
+      j <- y - radius to y + radius
+      srcRgba = src(clamp(i, 0, src.width), clamp(j, 0, src.height))
+    } yield (red(srcRgba), green(srcRgba), blue(srcRgba), alpha(srcRgba)))
+      .fold((0, 0, 0, 0))((sum, rgba) => (sum._1 + rgba._1, sum._2 + rgba._2, sum._3 + rgba._3, sum._4 + rgba._4))
+
+    rgba(summedChannelValues._1 / nrOfPixels, summedChannelValues._2 / nrOfPixels, summedChannelValues._3 / nrOfPixels, summedChannelValues._4 / nrOfPixels)
+  }
 }
