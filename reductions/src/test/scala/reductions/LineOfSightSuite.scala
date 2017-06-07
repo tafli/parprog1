@@ -1,12 +1,8 @@
 package reductions
 
-import java.util.concurrent._
-import scala.collection._
-import org.scalatest.FunSuite
 import org.junit.runner.RunWith
+import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import common._
-import java.util.concurrent.ForkJoinPool.ForkJoinWorkerThreadFactory
 
 @RunWith(classOf[JUnitRunner]) 
 class LineOfSightSuite extends FunSuite {
@@ -28,5 +24,9 @@ class LineOfSightSuite extends FunSuite {
     assert(output.toList == List(0f, 1f, 4f, 4f))
   }
 
+  test("upsweep should correctly compute the tree on the indices 1 until 5 of a 5 element array for threshold 1") {
+    val res = upsweep(Array[Float](0f, 1f, 8f, 9f), 1, 4, 1)
+    assert(res == Node(Leaf(1,2,1f),Node(Leaf(2,3,4f),Leaf(3,4,3f))))
+  }
 }
 

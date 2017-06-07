@@ -1,7 +1,7 @@
 package reductions
 
-import org.scalameter._
 import common._
+import org.scalameter._
 
 object LineOfSightRunner {
 
@@ -70,7 +70,7 @@ object LineOfSight {
     */
   def upsweep(input: Array[Float], from: Int, end: Int,
               threshold: Int): Tree = {
-    if (end - from < threshold) Leaf(from, end, upsweepSequential(input, from, end))
+    if (end - from <= threshold) Leaf(from, end, upsweepSequential(input, from, end))
     else {
       val mid = from + (end - from) / 2
       val (tL, tR) = parallel(
