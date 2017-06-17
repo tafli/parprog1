@@ -1,14 +1,11 @@
 package barneshut
 
-import java.util.concurrent._
-import scala.collection._
-import org.scalatest.FunSuite
 import org.junit.runner.RunWith
+import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import common._
+
+import scala.collection._
 import scala.math._
-import scala.collection.parallel._
-import barneshut.conctrees.ConcBuffer
 
 @RunWith(classOf[JUnitRunner])
 class BarnesHutSuite extends FunSuite {
@@ -108,10 +105,35 @@ import FloatOps._
     boundaries.maxY = 97
     val sm = new SectorMatrix(boundaries, SECTOR_PRECISION)
     sm += body
-    val res = sm(2, 3).size == 1 && sm(2, 3).find(_ == body).isDefined
+    val res = sm(2, 3).size == 1 && sm(2, 3).exists(_ == body)
     assert(res, s"Body not found in the right sector")
   }
 
+  test("'SectorMatrix.combine' should correctly combine two sector matrices of size 96 containing points: (12, 34), (23, 45), (56, 9), (8, 79), (5, 99)") {
+    val body1 = new Body(5, 12, 34, 0.1f, 0.1f)
+    val body2 = new Body(5, 23, 45, 0.1f, 0.1f)
+    val body3 = new Body(5, 56, 9, 0.1f, 0.1f)
+    val body4 = new Body(5, 8, 79, 0.1f, 0.1f)
+    val body5 = new Body(5, 5, 99, 0.1f, 0.1f)
+    val boundaries = new Boundaries()
+    boundaries.minX = 1
+    boundaries.minY = 1
+    boundaries.maxX = 97
+    boundaries.maxY = 97
+    val sm1 = new SectorMatrix(boundaries, SECTOR_PRECISION)
+    val sm2 = new SectorMatrix(boundaries, SECTOR_PRECISION)
+    sm1 += body1
+    sm1 += body2
+    sm1 += body3
+    sm2 += body4
+    sm2 += body5
+
+    val sm = sm1.combine(sm2)
+
+    val res1 = sm(1, 3).size == 1
+    val res2 = sm(1, 3).exists(_ == body2)
+    assert(res1 && res2, s"Body not found in the right sector")
+  }
 }
 
 object FloatOps {
